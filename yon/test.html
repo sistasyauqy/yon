@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login - Sistem Manajemen Aset</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .info-box {
+            background: #f0f0f0;
+            border-left: 4px solid #4a90e2;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        
+        .info-box h3 {
+            color: #4a90e2;
+            margin-bottom: 10px;
+        }
+        
+        .info-box p {
+            color: #555;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #4a90e2;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3a7bc8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .output {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .output-line {
+            margin: 5px 0;
+        }
+        
+        .success {
+            color: #00ff00;
+        }
+        
+        .error {
+            color: #ff4444;
+        }
+        
+        .info {
+            color: #4a90ff;
+        }
+        
+        .warning {
+            color: #ffaa00;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Login System</h1>
+        
+        <div class="info-box">
+            <h3>📌 Akun Testing</h3>
+            <p><strong>Admin:</strong> admin@example.com / admin123</p>
+            <p><strong>User:</strong> user@example.com / user123</p>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="loginAsAdmin()">Login Admin</button>
+            <button class="btn-success" onclick="loginAsUser()">Login User</button>
+            <button class="btn-danger" onclick="clearData()">Clear Data</button>
+        </div>
+
+        <button class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="showStorageData()">
+            Tampilkan Data Storage
+        </button>
+
+        <div class="output" id="output"></div>
+
+        <h3 style="color: #2c3e50; margin-top: 20px;">Registered Users</h3>
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Password</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody id="usersBody">
+            </tbody>
+        </table>
+
+        <h3 style="color: #2c3e50; margin-top: 20px;">Assets</h3>
+        <table id="assetsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Total</th>
+                    <th>Borrowed</th>
+                    <th>Available</th>
+                    <th>Status</th>
+                    <th>Borrower</th>
+                </tr>
+            </thead>
+            <tbody id="assetsBody">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const output = document.getElementById('output');
+
+        function log(message, type = 'info') {
+            const line = document.createElement('div');
+            line.className = `output-line ${type}`;
+            line.textContent = `[${type.toUpperCase()}] ${message}`;
+            output.appendChild(line);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearOutput() {
+            output.innerHTML = '';
+        }
+
+        function initializeData() {
+            clearOutput();
+            log('Initializing demo data...', 'info');
+
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            if (users.length === 0) {
+                log('No users found, creating demo users...', 'warning');
+                users = [
+                    {
+                        id: 1,
+                        name: 'Admin User',
+                        email: 'admin@example.com',
+                        password: 'admin123',
+                        role: 'admin',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        name: 'Regular User',
+                        email: 'user@example.com',
+                        password: 'user123',
+                        role: 'user',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('users', JSON.stringify(users));
+                log('✓ Demo users created', 'success');
+            } else {
+                log(`✓ Found ${users.length} users in storage`, 'success');
+            }
+
+            let assets = JSON.parse(localStorage.getItem('assets')) || [];
+            if (assets.length === 0) {
+                log('No assets found, creating demo assets...', 'warning');
+                assets = [
+                    {
+                        id: 1,
+                        name: 'Laptop Dell',
+                        kategori: 'Elektronik',
+                        jumlah: 5,
+                        jumlahDipinjam: 0,
+                        kondisi: 'Baik',
+                        lokasi: 'Ruang IT',
+                        status: 'Tersedia',
+                        peminjam: null,
+                        tanggalPinjam: null,
+                        tanggalKembali: null
+                    },
+                    {
+                        id: 2,
+                        name: 'Printer HP',
+                        kategori: 'Perangkat',
+                        jumlah: 3,
+                        jumlahDipinjam: 0,
+                        kondisi: 'Baik',
+                        lokasi: 'Ruang Administrasi',
+                        status: 'Tersedia',
+                        peminjam: null,
+                        tanggalPinjam: null,
+                        tanggalKembali: null
+                    },
+                    {
+                        id: 3,
+                        name: 'Proyektor',
+                        kategori: 'Presentasi',
+                        jumlah: 2,
+                        jumlahDipinjam: 0,
+                        kondisi: 'Baik',
+                        lokasi: 'Ruang Meeting',
+                        status: 'Tersedia',
+                        peminjam: null,
+                        tanggalPinjam: null,
+                        tanggalKembali: null
+                    },
+                    {
+                        id: 4,
+                        name: 'Sound System',
+                        kategori: 'Audio',
+                        jumlah: 4,
+                        jumlahDipinjam: 0,
+                        kondisi: 'Sangat Baik',
+                        lokasi: 'Gudang',
+                        status: 'Tersedia',
+                        peminjam: null,
+                        tanggalPinjam: null,
+                        tanggalKembali: null
+                    },
+                    {
+                        id: 5,
+                        name: 'Meja Kerja',
+                        kategori: 'Furniture',
+                        jumlah: 10,
+                        jumlahDipinjam: 0,
+                        kondisi: 'Baik',
+                        lokasi: 'Ruang Kerja',
+                        status: 'Tersedia',
+                        peminjam: null,
+                        tanggalPinjam: null,
+                        tanggalKembali: null
+                    }
+                ];
+                localStorage.setItem('assets', JSON.stringify(assets));
+                log('✓ Demo assets created', 'success');
+            } else {
+                log(`✓ Found ${assets.length} assets in storage`, 'success');
+            }
+
+            displayUsersTable();
+            displayAssetsTable();
+        }
+
+        function displayUsersTable() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const tbody = document.getElementById('usersBody');
+            tbody.innerHTML = '';
+
+            users.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td><code>${user.password}</code></td>
+                    <td><strong>${user.role}</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function displayAssetsTable() {
+            const assets = JSON.parse(localStorage.getItem('assets')) || [];
+            const tbody = document.getElementById('assetsBody');
+            tbody.innerHTML = '';
+
+            assets.forEach(asset => {
+                const jumlahTotal = asset.jumlah || 1;
+                const jumlahDipinjam = asset.jumlahDipinjam || 0;
+                const jumlahTersedia = jumlahTotal - jumlahDipinjam;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${asset.id}</td>
+                    <td>${asset.name}</td>
+                    <td>${asset.kategori}</td>
+                    <td>${jumlahTotal}</td>
+                    <td>${jumlahDipinjam}</td>
+                    <td>${jumlahTersedia}</td>
+                    <td>${asset.status}</td>
+                    <td>${asset.peminjam || '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function loginAsAdmin() {
+            clearOutput();
+            log('Attempting admin login...', 'info');
+            log('Email: admin@example.com', 'warning');
+            log('Password: admin123', 'warning');
+
+            initializeData();
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.email === 'admin@example.com' && u.password === 'admin123');
+
+            if (user) {
+                log(`✓ Login successful! Found user: ${user.name}`, 'success');
+                log(`✓ Role: ${user.role}`, 'success');
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                log('✓ Redirecting to dashboard-admin.html...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard-admin.html';
+                }, 1500);
+            } else {
+                log('✗ Login failed! User not found', 'error');
+                log(`Available users: ${JSON.stringify(users.map(u => ({ email: u.email, password: u.password })))}`, 'error');
+            }
+        }
+
+        function loginAsUser() {
+            clearOutput();
+            log('Attempting user login...', 'info');
+            log('Email: user@example.com', 'warning');
+            log('Password: user123', 'warning');
+
+            initializeData();
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.email === 'user@example.com' && u.password === 'user123');
+
+            if (user) {
+                log(`✓ Login successful! Found user: ${user.name}`, 'success');
+                log(`✓ Role: ${user.role}`, 'success');
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                log('✓ Redirecting to dashboard-user.html...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard-user.html';
+                }, 1500);
+            } else {
+                log('✗ Login failed! User not found', 'error');
+                log(`Available users: ${JSON.stringify(users.map(u => ({ email: u.email, password: u.password })))}`, 'error');
+            }
+        }
+
+        function showStorageData() {
+            clearOutput();
+            log('=== LOCAL STORAGE DATA ===', 'info');
+            
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const assets = JSON.parse(localStorage.getItem('assets')) || [];
+            const currentUser = localStorage.getItem('currentUser');
+
+            log(`Total Users: ${users.length}`, 'info');
+            users.forEach(user => {
+                log(`  - ${user.email} (${user.role}) / Password: ${user.password}`, 'warning');
+            });
+
+            log(`Total Assets: ${assets.length}`, 'info');
+            assets.forEach(asset => {
+                log(`  - ${asset.name} (${asset.status}) - Peminjam: ${asset.peminjam || 'None'}`, 'warning');
+            });
+
+            log(`Current User: ${currentUser ? JSON.parse(currentUser).email : 'None'}`, 'info');
+        }
+
+        function clearData() {
+            const confirm_delete = confirm('Apakah Anda yakin ingin menghapus semua data?');
+            if (confirm_delete) {
+                localStorage.clear();
+                clearOutput();
+                log('✓ All data cleared!', 'success');
+                displayUsersTable();
+                displayAssetsTable();
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('load', function() {
+            log('Test page loaded', 'info');
+            initializeData();
+        });
+    </script>
+</body>
+</html>
